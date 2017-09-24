@@ -1,0 +1,258 @@
+<!doctype html>
+	<html>
+	
+	<head>
+	    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	    <title> Beatbox</title>
+	</head>
+	
+	<style>
+	    button {
+	        padding: 5px;
+	        background: rgb(240, 240, 240);
+	        border: 1px solid rgb(122, 122, 122);
+	        border-radius: 2px;
+	        outline: none;
+	        width:120px;
+	        height:120px;
+	        font-size:16px;
+	        font-family:Impact
+	    }
+	
+	    button.active, button:active {
+	        background: rgb(255, 120, 150);
+	        border: 1px solid rgb(0,0,0);
+	        box-shadow: 0 0 2px 0 rgb(0,0,0);
+	    }
+	
+	    div#kick{
+	        width:130px;
+	        height:600px;
+	        float:left;
+	    }
+	    #snare{
+	        width:130px;
+	        height:600px;
+	        float:left;
+	    }
+	    #hihat{
+	        width:130px;
+	        height:600px;
+	        float:left;
+	    }
+	    #crash{
+	        width:130px;
+	        height:600px;
+	        float:left;
+	    }
+	
+	    input.volume {
+	        width:120px;
+	        height:10px;
+	    }
+	
+	</style>
+	
+	<body>
+	
+	<h1> Homework#1: Beatbox </h1>
+	<br>
+	<div id = "kick" align = "center">
+	    <button id="kickPad" onmousedown="playdrum(0)" > <img src="kick.png" with="70" height="50"> </p> Kick ('a' key)</button>
+	    <p style="font-family:Times New Roman;" id="kickVolLabel"></p>
+	    <input class="volume" onchange="changegain(0,this.value)" id="kickVol" title="Kick volume" type="range" min="-24" max ="0" value = "-12">
+
+	    
+	</div>
+	<div id = "snare" align = "center">
+	    <button id="snarePad" onmousedown="playdrum(1)" > <img src="snare.png" with="70" height="50"></p>Snare ('s' key)</button>
+	    <p style="font-family:Times New Roman;" id="snareVolLabel"></p>
+	    <input class="volume" onchange="changegain(1,this.value)" id="snareVol" title="Snare volume" type="range" min="-24" max ="0" value = "-12">
+		
+	
+	    
+	</div>
+	<div id = "hihat" align = "center">
+	    <button id="hihatPad" onmousedown="playdrum(2)"> <img src="hihat.png" with="70" height="50"></p> Hihat ('k' key)</button>
+	    <p style="font-family:Times New Roman;" id="hihatVolLabel"></p>
+	    <input class="volume" onchange="changegain(2,this.value)" id="hihatVol" title="Hihat volume" type="range" min="-24" max ="0" value = "-12">
+	
+
+	</div>
+	<div id = "crash" align = "center">
+	    <button id="crashPad" onmousedown="playdrum(3)" > <img src="crash.png" with="70" height="50"></p>Crash('l' key)</button>
+	    <p style="font-family:Times New Roman;" id="crashVolLabel"></p>
+	    <input class="volume" onchange="changegain(3,this.value)" id="crashVol" title="Crash volume" type="range" min="-24" max ="0" value = "-12">
+	
+	</div>
+
+	<div>
+		<p style="font-family:Times New Roman;">Reverb<p>
+		<input type="radio" name="rev" id="on" value="on" >on
+  		<input type="radio" name="rev" id="off" value="off" checked> off
+  	</div>
+	
+	<script>
+	    var context = new (window.AudioContext || window.webkitAudioContext)();
+		
+	    var buffers = new Array(4); // 0 : kick, 1 : snare, 2 : hihat 3 : crash
+	    var volume_id = new Array("kickVol","snareVol","hihatVol","crashVol");
+	    var volume_label_id = new Array("kickVolLabel","snareVolLabel","hihatVolLabel","crashVolLabel");
+	    var gain_nodes = new Array(4);
+		//adding conv(reverb)
+		var convolver = context.createConvolver()
+		
+	    
+	    for (i  = 0; i < 4; i++) {
+	        gain_nodes[i] = context.createGain();
+	        var vol = document.getElementById(volume_id[i]).value;
+	        gain_nodes[i].gain.value = db2gain(vol);
+	        document.getElementById(volume_label_id[i]).innerHTML = 'Volume:  ' + vol + 'dB'; 
+	    }
+	    
+	    
+	
+	    var kick = new XMLHttpRequest();
+	    kick.open("Get","kick.wav",true);   //  <---- replace this file with yours
+	    kick.responseType = "arraybuffer";
+	    kick.onload = function(){
+	        context.decodeAudioData(kick.response, function(buffer){buffers[0] = buffer;});
+	    }
+	    kick.send();
+	
+	    var snare = new XMLHttpRequest();
+	    snare.open("Get","snare.wav",true);  //  <---- replace this file with yours
+	    snare.responseType = "arraybuffer";
+	    snare.onload = function(){
+	        context.decodeAudioData(snare.response, function(buffer){buffers[1] = buffer;});
+	    }
+	    snare.send();
+	
+	    var hihat = new XMLHttpRequest();
+	    hihat.open("Get","hihat.wav",true);  //  <---- replace this file with yours
+	    hihat.responseType = "arraybuffer";
+	    hihat.onload = function(){
+	        context.decodeAudioData(hihat.response, function(buffer){buffers[2] = buffer;});
+	    }
+	    hihat.send();
+
+	    var crash = new XMLHttpRequest();
+	    crash.open("Get","crash.wav",true);  //  <---- replace this file with yours
+	    crash.responseType = "arraybuffer";
+	    crash.onload = function(){
+	        context.decodeAudioData(crash.response, function(buffer){buffers[3] = buffer;});
+	    }
+	    crash.send();
+	
+	
+	    window.onload=function(){
+	        window.addEventListener('keydown', function (key) {
+	            keyboardDown(key);
+	        }, false);
+	
+	        window.addEventListener('keyup', function (key) {
+	            keyboardUp(key);
+	        }, false);
+	    }
+	
+	
+	    function playdrum(i) {
+	    	if (document.getElementById("on").checked ) {
+	    		gain_nodes[i].disconnect()
+	    		source = context.createBufferSource();
+            	source.buffer = buffers[i];
+            	convolver.buffer=buffers[i];
+            	source.connect(gain_nodes[i])
+            	gain_nodes[i].connect(convolver)
+            	convolver.connect(context.destination);
+            	source.start();
+
+		  	}
+		  	else{	
+		  		convolver.disconnect();
+		  		source = context.createBufferSource();
+		  		source.buffer = buffers[i];
+		  		source.connect(gain_nodes[i])
+		  		gain_nodes[i].connect(context.destination);
+		  		source.start(); }
+
+	    }
+	
+	    function changegain(i,changedvalue){
+	    	
+	        gain_nodes[i].gain.value = db2gain(changedvalue);
+	        document.getElementById(volume_label_id[i]).innerHTML = 'Volume:  ' + changedvalue + 'dB'; 
+	    }
+
+	  
+	
+	    function db2gain(db_gain) {
+	        
+	        gain=Math.pow(10,(db_gain/20))
+	        
+	        return gain
+	    }
+	
+	    // keyboard mapping 
+	    function keyboardDown(key) {
+	        switch (key.keyCode) {
+	            case 65: //'a'
+	                var kickpad = document.getElementById("kickPad"); 
+	                kickpad.className = 'active';
+	                simulateClick(kickpad);
+	                break;
+	            case 83: //'s'
+	                var snarepad = document.getElementById("snarePad"); 
+	                snarepad.className = 'active';
+	                simulateClick(snarepad);
+	                break;
+	            case 75: //'k'
+	                var hihatpad = document.getElementById("hihatPad"); 
+	                hihatpad.className = 'active';
+	                simulateClick(hihatpad);
+	                break;
+	            case 76: //'l'
+	                var crashpad = document.getElementById("crashPad"); 
+	                crashpad.className = 'active';
+	                simulateClick(crashpad);
+	                break;
+
+	        }
+	    }
+	
+	    function keyboardUp(key) {
+	        switch (key.keyCode) {
+	            case 65: //'a'
+	                var kickpad = document.getElementById("kickPad"); 
+	                kickpad.className = '';
+	                break;
+	            case 83: //'s'
+	                var snarepad = document.getElementById("snarePad"); 
+	                snarepad.className = '';
+	                break;
+	            case 75: //'k'
+	                var hihatpad = document.getElementById("hihatPad"); 
+	                hihatpad.className = '';
+	                break;
+
+	            case 76: //'l'
+	                var crashpad = document.getElementById("crashPad"); 
+	                crashpad.className ='';
+	                break;
+	        }
+	    }
+	
+	    // simulated mousedown on buttons
+	    function simulateClick(element) {
+	        var event = new MouseEvent("mousedown", {
+	            bubbles: true,
+	            cancelable: true,
+	            view: window
+	        });
+	        element.dispatchEvent(event);
+	    }
+	
+	</script>
+	</body>
+	
+	</html>
