@@ -135,7 +135,6 @@
 	        context.decodeAudioData(hihat.response, function(buffer){buffers[2] = buffer;});
 	    }
 	    hihat.send();
-
 	    var crash = new XMLHttpRequest();
 	    crash.open("Get","crash.wav",true);  //  <---- replace this file with yours
 	    crash.responseType = "arraybuffer";
@@ -166,6 +165,10 @@
             	gain_nodes[i].connect(convolver)
             	convolver.connect(context.destination);
             	source.start();
+            	gain_nodes[i].gain=0.4*gain_nodes[i].gain
+            	source.connect(gain_nodes[i])
+		  		gain_nodes[i].connect(context.destination);
+		  		source.start(); 
 
 		  	}
 		  	else{	
@@ -175,7 +178,6 @@
 		  		source.connect(gain_nodes[i])
 		  		gain_nodes[i].connect(context.destination);
 		  		source.start(); }
-
 	    }
 	
 	    function changegain(i,changedvalue){
@@ -183,7 +185,6 @@
 	        gain_nodes[i].gain.value = db2gain(changedvalue);
 	        document.getElementById(volume_label_id[i]).innerHTML = 'Volume:  ' + changedvalue + 'dB'; 
 	    }
-
 	  
 	
 	    function db2gain(db_gain) {
@@ -216,7 +217,6 @@
 	                crashpad.className = 'active';
 	                simulateClick(crashpad);
 	                break;
-
 	        }
 	    }
 	
@@ -234,7 +234,6 @@
 	                var hihatpad = document.getElementById("hihatPad"); 
 	                hihatpad.className = '';
 	                break;
-
 	            case 76: //'l'
 	                var crashpad = document.getElementById("crashPad"); 
 	                crashpad.className ='';
@@ -255,4 +254,4 @@
 	</script>
 	</body>
 	
-	</html>
+</html>
