@@ -73,14 +73,14 @@
 	    
 	</div>
 	<div id = "hihat" align = "center">
-	    <button id="hihatPad" onmousedown="playdrum(2)"> <img src="hihat.png" with="70" height="50"></p> Hihat ('l' key)</button>
+	    <button id="hihatPad" onmousedown="playdrum(2)"> <img src="hihat.png" with="70" height="50"></p> Hihat ('k' key)</button>
 	    <p style="font-family:Times New Roman;" id="hihatVolLabel"></p>
 	    <input class="volume" onchange="changegain(2,this.value)" id="hihatVol" title="Hihat volume" type="range" min="-24" max ="0" value = "-12">
 	
 
 	</div>
 	<div id = "crash" align = "center">
-	    <button id="crashPad" onmousedown="playdrum(3)" > <img src="crash.png" with="70" height="50"></p>Crash('k' key)</button>
+	    <button id="crashPad" onmousedown="playdrum(3)" > <img src="crash.png" with="70" height="50"></p>Crash('l' key)</button>
 	    <p style="font-family:Times New Roman;" id="crashVolLabel"></p>
 	    <input class="volume" onchange="changegain(3,this.value)" id="crashVol" title="Crash volume" type="range" min="-24" max ="0" value = "-12">
 	
@@ -206,12 +206,12 @@
 	                snarepad.className = 'active';
 	                simulateClick(snarepad);
 	                break;
-	            case 76: //'l'
+	            case 75: //'k'
 	                var hihatpad = document.getElementById("hihatPad"); 
 	                hihatpad.className = 'active';
 	                simulateClick(hihatpad);
 	                break;
-	            case 75: //'k'
+	            case 76: //'l'
 	                var crashpad = document.getElementById("crashPad"); 
 	                crashpad.className = 'active';
 	                simulateClick(crashpad);
@@ -230,12 +230,12 @@
 	                var snarepad = document.getElementById("snarePad"); 
 	                snarepad.className = '';
 	                break;
-	            case 76: //'l'
+	            case 75: //'k'
 	                var hihatpad = document.getElementById("hihatPad"); 
 	                hihatpad.className = '';
 	                break;
 
-	            case 75: //'k'
+	            case 76: //'l'
 	                var crashpad = document.getElementById("crashPad"); 
 	                crashpad.className ='';
 	                break;
