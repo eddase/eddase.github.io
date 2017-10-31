@@ -51,10 +51,16 @@ function keyPressed() {
     Sound.jump(Sound.currentTime()-10);
   }else if (keyCode===RIGHT_ARROW){
     Sound.jump(Sound.currentTime()+10);
-  }else if (keyCode===UP_ARROW && vol<1){
-    vol=vol+0.1;
-    Sound.setVolume(vol);
-  }else if (keyCode===DOWN_ARROW && vol>0){
+  }else if (keyCode===UP_ARROW){
+    if (vol<0.9){
+      vol=vol+0.1;
+      Sound.setVolume(vol);
+      }
+    else{
+      vol=1
+      Sound.setVolume(vol);
+    }
+  }else if (keyCode===DOWN_ARROW){
     if (vol>0.1){
       vol=vol-0.1;
       Sound.setVolume(vol);
