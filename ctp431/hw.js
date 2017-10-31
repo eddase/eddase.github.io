@@ -7,7 +7,6 @@ var gravity=2;
 var rgb=[[255,0,0],[255,255,0],[0,0,255],[0,255,0],[255,0,255]];
 function preload() {
   //load first sound file
-  soundFormats('mp3', 'ogg');
   Sound = loadSound('blackdog.mp3');
 }
 
@@ -52,6 +51,18 @@ function keyPressed() {
     Sound.jump(Sound.currentTime()-10);
   }else if (keyCode===RIGHT_ARROW){
     Sound.jump(Sound.currentTime()+10);
+  }else if (keyCode===UP_ARROW && vol<1){
+    vol=vol+0.1;
+    Sound.setVolume(vol);
+  }else if (keyCode===DOWN_ARROW && vol>0){
+    if (vol>0.1){
+      vol=vol-0.1;
+      Sound.setVolume(vol);
+      }
+    else{
+      vol=0
+      Sound.setVolume(vol);
+    }
   } else if (key==="1"){
     Sound.stop();
     Sound = loadSound('blackdog.mp3')
@@ -118,11 +129,7 @@ function draw(){
   if(!Sound.isLoaded()){
     text("now loading music. please wait",width/2,height/3)
 	}
-//fft parameters
-  
-  
  	var spec= fft.analyze();
-  //energy=[fft.getEnergy("bass"),fft.getEnergy("lowMid"),fft.getEnergy("mid"),fft.getEnergy("highMid"),fft.getEnergy("treble")]
   energy=fft.logAverages(fft.getOctaveBands(0.5,50))
 for (var i=0; i < 10; i++){
   added[i]=added[i]+Math.pow(10,energy[i]/100)-1;
@@ -142,16 +149,14 @@ for (var i=0; i < 10; i++){
     }
   }
   //volume
-  noFill();
-  rect(width/15,height/15,100,15);
   noStroke();
   fill(0);
   if (vol<=1 && vol>=0){
-    rect(width/15,height/15,100*vol,15);
+    rect(width/16,height/15+100,15,-100*vol);
   }else if(vol>1){
-    rect(width/15,height/15,100,15) 
-  //current time
+    rect(width/16,height/15,15,100) 
   }
+  //time
   noStroke();
   fill(255)
   rect(0,0,20,height)
