@@ -7,6 +7,7 @@ var gravity=2;
 var rgb=[[255,0,0],[255,255,0],[0,0,255],[0,255,0],[255,0,255]];
 function preload() {
   //load first sound file
+  soundFormats('mp3', 'ogg');
   Sound = loadSound('blackdog.mp3');
 }
 
@@ -29,26 +30,37 @@ function rain(a,b){
 
 //pause and stop
 function mousePressed() {
-  if (!Sound.isPlaying() ) {
-    Sound.play();
+  if(mouseX>50){
+    if (!Sound.isPlaying() ) {
+      Sound.play();
   } 
-  else {
-    Sound.pause();
+    else {
+      Sound.pause();
+  }
+  }else{
+    Sound.jump(mouseY/height*Sound.duration())
   }
 }
 
-//restart and load musics
-function keyTyped() {
-  if (key==="s"){
+//restart and load musics from server
+function keyPressed() {
+  if (keyCode===ESCAPE){
     Sound.stop();
-  }
-  if (key==="1"){
+  }else if (keyCode===BACKSPACE){
+    Sound.jump();
+  }else if (keyCode===LEFT_ARROW){
+    Sound.jump(Sound.currentTime()-10);
+  }else if (keyCode===RIGHT_ARROW){
+    Sound.jump(Sound.currentTime()+10);
+  } else if (key==="1"){
     Sound.stop();
-    Sound = loadSound('nomore.mp3')
-  }
-  if (key==="2"){
+    Sound = loadSound('blackdog.mp3')
+  }else if (key==="2"){
     Sound.stop();
     Sound = loadSound('look.mp3')
+  }else if (key==="3"){
+    Sound.stop();
+    Sound = loadSound('nomore.mp3')
   }      
   return false;
 }
@@ -70,7 +82,7 @@ function mouseWheel(i) {
   }
 
 }
-
+//music from local file
 function gotFile(music){
   Sound.stop();
   Sound=loadSound(music);
@@ -131,18 +143,24 @@ for (var i=0; i < 10; i++){
   }
   //volume
   noFill();
-  rect(width/15,height/15,100,15)
+  rect(width/15,height/15,100,15);
   noStroke();
-  fill(0,0,0);
+  fill(0);
   if (vol<=1 && vol>=0){
     rect(width/15,height/15,100*vol,15);
   }else if(vol>1){
     rect(width/15,height/15,100,15) 
+  //current time
   }
+  noStroke();
+  fill(255)
+  rect(0,0,20,height)
+  fill(0);
+  rect(0,0,20,Sound.currentTime()*height/Sound.duration())
+  
   if (!Sound.isPlaying()&&Sound.isLoaded()){
     textSize(50)
     textAlign(CENTER)
     text("Click mouse to start",width/2,height/2)
   }
-  console.log(drops.length)
 }
