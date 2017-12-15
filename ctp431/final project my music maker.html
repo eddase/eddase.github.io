@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<link  href='hw3.css' rel='stylesheet'>
+    <script src="NexusUI.js"></script>
+    <script src="../build/Tone.js"></script>
+    
+  </head>
+  <body>
+  <div id="interface">
+  	<p class="panelLabel"></p>
+	<div id="select"></div>
+	<br>
+  	<div id="bpm" style="float:left" ></div>
+  	&nbsp; <span id="n" style="float:left" margin=5px 5px 5px 5px;></span>
+  	<div id="mastervol"></div>
+  	<br>
+  	<div id="beatvol"></div>
+    <div id="start" style="float:left"></div>
+  </div> 
+   <br>
+
+  <div id="beat" style="float:left" > 
+  <p class="panelLabel"> beat maker </p>  
+    <div id="sequencer"></div>
+    <div id="random"></div>
+
+  </div>
+  <div id="controller" style="float:left">
+
+	<div id="filter">
+	<p class="panelLabel"> Filter </p>
+	<div id="filter_freq" style="float:left">FREQ</div> 
+	<div id="filter_env_attack" style="float:left">ATTACK</div> 
+	<div id="filter_env_decay" style="float:left">DECAY</div> 
+	<div id="filter_env_sustain" style="float:left">SUSTAIN</div> 
+	<div id="filter_env_release" style="float:left">RELEASE</div> 
+	</div>
+
+	<div id="ampEnv">
+	<p class="panelLabel"> Amp Envelope </p>
+	<div id="amp_env_attack" style="float:left">ATTACK</div> 
+	<div id="amp_env_decay" style="float:left">DECAY</div> 
+	<div id="amp_env_sustain" style="float:left">SUSTAIN</div> 
+	<div id="amp_env_release" style="float:left">RELEASE</div> 
+	</div>
+	<br>
+  	  	
+  	  </div>
+  
+  <div id="chordcontrol" style="float:left">
+  	<p class="panelLabel"> chords </p>
+  	<div id="whichchord"></div>
+  	<br>
+  	<div id="rootselect"></div>
+  	<br>
+  	<div id="Mm"></div>
+  	<br>
+  	<div id="Mm7"></div>
+
+  </div>
+  <div id="arpeggiocontrol" style="float:left">
+  	<p class="panelLabel"> arpeggio pattern </p>
+  	<div id="patt"></div>
+  	<div id="arprandom"></div>
+</div>
+  	
+    <script>
+    	
+
+    	
+    	var random = new Nexus.TextButton("#random",{'text': 'RANDOM!'})
+    	random.on('change',function(v){
+    		if(v==true){
+    		sequencer.matrix.populate.all( [0.2])
+    	}})
+
+    	 var beat = new Nexus.Rack("#beat",{
+  			})
+    	 var controller =  new Nexus.Rack("#controller",{
+    	 	})
+    	 	var co1 = new Nexus.Dial("#filter_env_attack",{
+    	 		'min': 0,
+  				'max': 3,
+  				'value': 1
+    	 	})
+    	 	co1.on('change',function(v) {
+  				synth.envelope.attack=v
+			})
+    	 	var co2 = new Nexus.Dial("#filter_env_decay",{
+    	 		'min': 0,
+  				'max': 3,
+  				'value': 1
+    	 	})
+    	 	co2.on('change',function(v) {
+  				synth.envelope.decay=v
+			})
+    	 	var co3 = new Nexus.Dial("#filter_env_sustain",{
+    	 		'min': 0,
+  				'max': 1,
+  				'value': 0.3
+    	 	})
+    	 	co3.on('change',function(v) {
+  				synth.envelope.sustain=v
+			})
+    	 	var co4 = new Nexus.Dial("#filter_env_release",{
+    	 		'min': 0,
+  				'max': 3,
+  				'value': 1
+    	 	})
+    	 	co4.on('change',function(v) {
+  				synth.envelope.attack=v
+			})
+    	 	var co5 = new Nexus.Dial("#filter_freq",{
+    	 		'min': 100,
+  				'max': 10000,
+  				'value': 200})
+    	 	co5.on('change',function(v) {
+  				synth.filterEnvelope.baseFrequency=v
+			})
+    	 	var co6 = new Nexus.Dial("#amp_env_attack",{
+    	 		'min': 0,
+  				'max': 3,
+  				'value': 1
+    	 	})
+    	 	co6.on('change',function(v) {
+  				synth.filterEnvelope.attack=v
+			})
+    	 	var co7 = new Nexus.Dial("#amp_env_decay",{
+    	 		'min': 0,
+  				'max': 3,
+  				'value': 1
+    	 	})
+    	 	co7.on('change',function(v) {
+  				synth.filterEnvelope.decay=v
+  			})
+    	 	var co8 = new Nexus.Dial("#amp_env_sustain",{
+    	 		'min': 0,
+  				'max': 1,
+  				'value': 0.3
+    	 	})
+    	 	co8.on('change',function(v) {
+  				synth.filterEnvelope.sustain=v
+			})
+    	 	var co9 = new Nexus.Dial("#amp_env_release",{
+    	 		'min': 0,
+  				'max': 3,
+  				'value': 1
+    	 	})
+    	 	co9.on('change',function(v) {
+  				synth.filterEnvelope.release=v
+			})
+
+    	 var chordcontrol = new Nexus.Rack("#chordcontrol",{
+    	 }) 
+    	 var whichchord = new Nexus.RadioButton('#whichchord',{
+  		'size': [500,25],
+  'numberOfButtons': 8,
+  'active': 0
+})
+    	 whichchord.on('change',function(v){
+    	 	rootselect.selectedIndex=roots[whichchord.active]
+    	 	if(minmaj[whichchord.active]=='maj'){
+    	 		Mm.turnOn();
+    	 	}else{
+    	 		Mm.turnOff();
+    	 	}
+    	 	if(minmaj7[whichchord.active]=='maj'){
+				Mm7.turnOn();
+    	 	}
+    	 	else{
+    	 		Mm7.turnOff();
+    	 	}
+    	 })
+    	 var rootselect = new Nexus.Select('#rootselect',{
+  		'size': [100,30],
+  		'options': ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+			})
+    	 rootselect.on('change',function(v){
+    	 	roots[whichchord.active]=rootselect.selectedIndex
+    	 })
+    	var Mm = new Nexus.TextButton('#Mm',{
+    		'size': [150,50],
+    		'mode' : 'toggle',
+    		'state': true,
+    		'text': 'minor',
+    		'alternate': 'major'})
+
+    	Mm.on('change',function(v) {
+    		 if (v==true){
+    		 	minmaj[whichchord.active]="maj"
+    		 }else{
+    		 	minmaj[whichchord.active]="min"
+    		 }
+    		})
+		
+		var Mm7 = new Nexus.TextButton('#Mm7',{
+    		'size': [150,50],
+    		'mode' : 'toggle',
+    		'state': true,
+    		'text': 'minor7th',
+    		'alternate': 'major7th'
+		})
+		Mm7.on('change',function(v) {
+    		 if (v==true){
+    		 	minmaj7[whichchord.active]="maj"
+    		 }else{
+    		 	minmaj7[whichchord.active]="min"
+    		 }
+    		})
+    	
+    	 var patterncontrol = new Nexus.Rack("arpeggiocontrol",{
+    	 })
+    	 var patt= new Nexus.Multislider("#patt",{'step':1,'size': [700,300],'numberOfSliders': 16,
+ 'min': 0,
+ 'max': 4,
+'values': [1,2,3,2,1,2,3,2,1,2,3,2,1,2,3,2]} )
+    	 patt.on('change',function(){
+    	 	arp=patt.values
+    	 })
+
+    var mastervol = new Nexus.Slider("#mastervol",{
+    'min':0,'max':1});
+    mastervol.on('change',function(v){
+    	synth.volume.value=Math.log(v) / Math.log(10)/20;
+    })
+    var beatvol = new Nexus.Slider("#beatvol",{
+    	"min":0,'max':1
+    })
+   beatvol.on('change',function(v){
+    	keys.volume.value=Math.log(v) / Math.log(10)/20;
+    })
+    var arprandom = new Nexus.TextButton("#arprandom",{'text': 'RANDOM!'})
+    	arprandom.on('change',function(v){
+    		if(v==true){
+    		for(i=0;i<16;i++){
+    			patt.setSlider(i,Nexus.ri(5))
+    			patt.values[i]=Nexus.ri(5)}
+    	}}) 
+    var bpm = new Nexus.Slider("#bpm",{
+    	'mode': 'absolute',
+    	'min':30,
+    	'max':300,
+    	'step':1,
+    	'value':120
+    });
+    bpm.on('change',function(v){
+    	Tone.Transport.bpm.value = v
+    });
+    var number = new Nexus.Number('#n')
+    number.colorize("fill","#517FC9")
+	number.link(bpm)
+ 		   
+	
+      var sequencer = new Nexus.Sequencer('#sequencer',{
+ 'size': [1000,450],
+ 'mode': 'toggle',
+ 'rows': 6,
+ 'columns': 16
+})
+      var start = new Nexus.Button('#start',{
+  'size': [60,60],
+  'mode': 'toggle',
+  'state': false
+})
+      start.on('change',function(v) {
+  if (v==true){
+
+  	loop.start();
+  	
+  }else{
+  	loop.stop();
+  }})
+
+    
+      
+  
+  var radiobutton = new Nexus.RadioButton('#select',{
+  'size': [200,50],
+  'numberOfButtons': 4,
+  'active': 0
+})
+  radiobutton.on('change',function(v) {
+  if (v==0){
+  	beat.show();
+  	controller.hide();
+  	chordcontrol.hide();
+  	patterncontrol.hide();
+  }else if(v==1){
+  	beat.hide();
+  	controller.show();
+  	chordcontrol.hide();
+  	patterncontrol.hide();	
+  }else if(v==2){
+  	beat.hide();
+  	controller.hide();
+  	chordcontrol.hide();
+  	patterncontrol.show();	
+  }else if(v==3){
+  	beat.hide();
+  	controller.hide();
+  	chordcontrol.show();
+  	patterncontrol.hide();	
+  }else{
+  	beat.hide();
+  	controller.hide();
+  	chordcontrol.hide();
+  	patterncontrol.show();
+  }
+  
+})
+beat.show();
+controller.hide();
+chordcontrol.hide();
+patterncontrol.hide(); 
+		var seq=[];
+		for (i=0; i<128; i++){
+			seq.push(i)
+		}
+		//setup a polyphonic sampler
+		var keys = new Tone.Players({
+			"kick" : "./audio/kick.wav",
+			"snare" : "./audio/snare.wav",
+			"ride" : "./audio/ride.wav",
+			"clap" : "./audio/clap.wav",
+			"high"	: "./audio/high.wav",
+		}, {
+			"volume" : 0,
+			"fadeOut" : "64n",
+		}).toMaster();
+
+		//make synth
+		var basssynth = new Tone.FMSynth({
+			"modulationIndex" : 12.22,
+			"envelope" : {
+				"attack" : 0.01,
+				"decay" : 0.2
+			},
+			"modulation" : {
+				"type" : "square"
+			},
+			"modulationEnvelope" : {
+				"attack" : 0.2,
+				"decay" : 0.01
+			}
+		}).toMaster();
+		var reverb = new Tone.Freeverb 
+		var synth = new Tone.MonoSynth({
+		}).chain(reverb, Tone.Master)
+		synth.volume.value=-12
+		var chordsynth = new Tone.PolySynth(6, Tone.Synth).toMaster();	
+
+		//the notes
+		var noteNames = ["kick", "snare", "ride", "clap","high"];
+		//chord
+		notes=["C4","C#4","D4","D#4","E4","F4","F#4","G4","G#4","A4","A#4","B4","C5","C#5","D4","D#5","E5","F5","F#5","G5","G#5","A5","A#5","B5"]
+		
+		roots=[ 0, 7, 9, 4, 5, 0, 5, 7 ]
+		minmaj=[ "maj", "maj", "min", "min", "maj", "maj", "min", "maj" ]
+		minmaj7=[ "maj", "min", "min", "min", "min", "maj", "min", "min" ]
+
+		function makechord(root,third,seventh){
+			if (third=="min"){
+			chord=[root,root+3,root+7]
+			}else{chord=[root,root+4,root+7]}
+			if (seventh=='min'){
+				chord[3]=root+10
+			}else{chord[3]=root+11}
+
+			chordNote=[notes[chord[0]],notes[chord[1]],notes[chord[2]],notes[chord[3]]]
+			return chordNote
+		}
+
+		var loop = new Tone.Sequence(function(time, col){
+			var arp=patt.values
+			//drum machine part
+			aa=makechord(roots[parseInt(col/16)],minmaj[parseInt(col/16)],0)
+			
+			for (var i = 0; i < 5; i++){
+				if (sequencer.matrix.pattern[i][col%16]== true){
+			
+				
+					keys.get(noteNames[i]).start(time, 0, "32n", 0);
+				}
+			}
+			if (sequencer.matrix.pattern[5][col%16]==true){
+				chordsynth.triggerAttackRelease(chordNote,"16n");
+			}
+			//chord BASS
+			if (col%16==0){
+				basssynth.triggerAttackRelease(notes[roots[parseInt(col/16)]], "4n");
+			}
+			//other notes(arpeggio)
+			
+			
+
+			if (patt.values[col%16]!=0){
+				synth.triggerAttackRelease(chordNote[parseInt(arp[col%16])-1],"4n");
+			
+			}
+
+
+
+		}, seq, "16n");
+	
+		Tone.Transport.start();
+
+		
+ 		
+		// GUI //
+		
+		
+		
+	</script>
+
+  </body>
+</html>
+       
